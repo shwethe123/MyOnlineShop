@@ -14,37 +14,17 @@ const VerifyEmail = ({ email, onBack }) => {
 
     setLoading(true)
     try {
-      console.log("Attempting to verify with code:", code);
       const signUpAttempt = await signUp.attemptEmailAddressVerification({code});
-      console.log("SignUp Attempt Result:", JSON.stringify(signUpAttempt, null, 2));
-
       if (signUpAttempt.status === "complete") {
-
-        if (!signUpAttempt.createdSessionId) {
-          console.error("No session ID found in signUpAttempt");
-          return { success: false, message: "No session ID returned from Clerk" };
-        }
-        
         // await setActive({session:signUpAttempt.createdSessionId})
         await setActive({session:signUpAttempt.createdSessionId})
-
-        console.log("Verification complete. Session set.");
-        return { success: true, message: "Email verified and session activated" };
-
       } else {
         Alert.alert("Error", "Verification failed. Please try again");
         console.error(JSON.stringify(signUpAttempt, null, 2));
-
-        return { success: false, message: "Verification failed. Status not complete." };
-
       }
     } catch (err) {
       Alert.alert("Error", err.error?. [0]?.message|| "Verification failed");
       console.error(JSON.stringify(err, null, 2));
-
-      const errorMessage = err?.errors?.[0]?.message || "Unknown verification error";
-      return { success: false, message: errorMessage };
-
     } finally {
       setLoading(false)
     }

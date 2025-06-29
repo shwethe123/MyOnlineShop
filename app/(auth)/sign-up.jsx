@@ -10,6 +10,8 @@ import VerifyEmail from './verify-email';
 const SignUpScreen = () => {
   const router = useRouter();
   const { isLoaded, signUp } = useSignUp();
+  // const [userName, setUserName] = useState("");
+  // const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail ] = useState("");
   const [password, setPassword ] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -17,25 +19,39 @@ const SignUpScreen = () => {
   const [ pendingVerification, setPendingVerification ] = useState(false);
 
   const handleSignUp = async () => {
-    if(!email || !password) return Alert.alert("Error", "Please fill in all fields");
-    if (password.length < 6) return Alert.alert("Error", "Password must be at lest6 characters");
+      if ( !email || !password)
+        return Alert.alert("Error", "Please fill in all fields");
+      if (password.length < 6)
+        return Alert.alert("Error", "Password must be at least 6 characters");
 
-    if(!isLoaded) return;
-    
-    setLoading(true)
+      // const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+      // if (!usernameRegex.test(userName))
+      //   return Alert.alert(
+      //     "Invalid Username",
+      //     "Username can only contain letters, numbers, hyphens (-), and underscores (_)."
+      //   );
 
-    try {
-      await signUp.create({ emailAddress: email, password});
+      if (!isLoaded) return;
 
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code"});
+      setLoading(true);
 
-      setPendingVerification(true);
-    } catch (err) {
-      Alert.alert("Error", err.errors?.[0]?.message || "Failed to create account");
-      console.error(JSON.stringify(err, null, 2));
-    } finally {
-      setLoading(false)
-    }
+      try {
+        await signUp.create({
+          // username: userName,
+          // phoneNumber: phoneNumber,
+          emailAddress: email,
+          password: password,
+        });
+
+        await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+        setPendingVerification(true);
+      } catch (err) {
+        Alert.alert("Error", err.errors?.[0]?.message || "Failed to create account");
+        console.error(JSON.stringify(err, null, 2));
+      } finally {
+        setLoading(false);
+      }
   };
 
   if (pendingVerification) return <VerifyEmail email={email} onBack={() => setPendingVerification(false)}/>;
@@ -61,6 +77,28 @@ const SignUpScreen = () => {
 
           <Text style={authStyles.title}>Create Account</Text>
           <View style={authStyles.container}>
+
+            {/* <View style={authStyles.inputContainer}>
+                <TextInput
+                  style={authStyles.textInput}
+                  placeholder='Enter username'
+                  placeholderTextColor={COLORS.textLight}
+                  value={userName}
+                  onChangeText={setUserName}
+                  autoCapitalize='none'
+                />
+            </View>
+            <View style={authStyles.inputContainer}>
+                <TextInput
+                    style={authStyles.textInput}
+                    placeholder='Enter phone number'
+                    placeholderTextColor={COLORS.textLight}
+                    value={phoneNumber}
+                    onChangeText={setPhoneNumber}
+                    keyboardType='number'
+                    autoCapitalize='none'
+                />
+            </View> */}
             {/* Email Input */}
             <View style={authStyles.inputContainer}>
                 <TextInput
